@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package agua.telemetry.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Service definition for ingesting high-frequency water flow data
+service TelemetryService {
+  // RPC for streaming sensor data from IoT Gateways to Agua Cloud
+  rpc RecordFlow(FlowRequest) returns (FlowResponse);
+}
+
+// The request message containing sensor telemetry
+message FlowRequest {
+  string sensor_id = 1;         // Unique ID for the Flow Rate Sensor
+  string region_id = 2;         // Deployment region (e.g., APAC-Singapore)
+  double flow_rate_lps = 3;     // Liters per second
+  double pressure_psi = 4;      // Current line pressure
+  
+  google.protobuf.Timestamp timestamp = 5;
+  
+  map<string, string> metadata = 6; // To capture device health/battery status
+}
+
+// The response message acknowledging receipt
+message FlowResponse {
+  bool success = 1;
+  string message = 2;
+  int64 processing_latency_ms = 3; // P99 Latency tracking data
+}
